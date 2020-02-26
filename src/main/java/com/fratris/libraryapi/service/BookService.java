@@ -9,4 +9,8 @@ public interface BookService {
     public Book save(Book book);
 
     Optional<Book> getById(Long id);
+
+    void delete(Book book);
+
+    Book updateById(Book book);
 }
