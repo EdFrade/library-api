@@ -13,7 +13,7 @@ import javax.validation.constraints.NotNull;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class BookDto {
+public class BookDTO {
     private Long id;
     @NotEmpty
     private String author;

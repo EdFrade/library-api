@@ -1,11 +1,9 @@
 package com.fratris.libraryapi.api.resource;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fratris.libraryapi.api.dto.BookDto;
+import com.fratris.libraryapi.api.dto.BookDTO;
 import com.fratris.libraryapi.model.entity.Book;
 import com.fratris.libraryapi.service.BookService;
-import org.assertj.core.api.Assertions;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,12 +18,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.util.regex.Matcher;
+import java.util.Optional;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -48,8 +45,8 @@ public class BookControllerTest {
     @DisplayName("Deve criar um livro com sucesso")
     public void createBookTest() throws Exception {
 
-        BookDto dto = BookDto.builder().author("Eduardo").title("My Life").isbn("101").build();
-        Book savedBook = createBook();
+        BookDTO dto = createNewDtoBook();
+        Book savedBook = createValidBook();
 
         BDDMockito.given(service.save(Mockito.any(Book.class))).willReturn(savedBook);
 
@@ -86,9 +83,49 @@ public class BookControllerTest {
                 .andExpect(jsonPath("errors", Matchers.hasSize(3)));
     }
 
+    @Test
+    @DisplayName("Deve retornar informações do livro com o id informado")
+    public void getDetailsBookTest() throws Exception {
+        Long id = 1L;
+        Book book = Book.builder().id(id).author("Eduardo").title("O Batman").isbn("123").build();
+        BDDMockito.given(service.getById(id)).willReturn(Optional.of(book));
 
-    public Book createBook(){
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .get(BOOK_API + "/"+id)
+                .accept(MediaType.APPLICATION_JSON);
+
+        mvc
+                .perform(request)
+                .andExpect(status().isOk())
+                .andExpect( MockMvcResultMatchers.jsonPath("id").value(1))
+                .andExpect( MockMvcResultMatchers.jsonPath("author").value("Eduardo"))
+                .andExpect( MockMvcResultMatchers.jsonPath("title").value("O Batman"))
+                .andExpect( MockMvcResultMatchers.jsonPath("isbn").value("123"));
+
+    }
+
+    @Test
+    @DisplayName("Deve retornar resource not a found quando livro não for encontrado")
+    public void BookNotFound() throws Exception {
+        Long id = 1L;
+
+        BDDMockito.given(service.getById(Mockito.anyLong())).willReturn(Optional.empty());
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .get(BOOK_API+"/"+id)
+                .accept(MediaType.APPLICATION_JSON);
+        mvc
+                .perform(request)
+                .andExpect(status().isNotFound());
+    }
+
+    public Book createValidBook(){
         return  Book.builder().id(101L).author("Eduardo").title("My Life").isbn("101").build();
+    }
+
+    public BookDTO createNewDtoBook(){
+        return  BookDTO.builder().author("Eduardo").title("My Life").isbn("101").build();
+
     }
 
 }
