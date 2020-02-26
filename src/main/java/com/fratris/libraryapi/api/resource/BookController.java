@@ -2,7 +2,6 @@ package com.fratris.libraryapi.api.resource;
 
 import com.fratris.libraryapi.api.dto.BookDTO;
 import com.fratris.libraryapi.api.exception.ApiErrors;
-import com.fratris.libraryapi.model.entity.Book;
 import com.fratris.libraryapi.service.BookService;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/books")
@@ -30,15 +28,15 @@ public class BookController {
     @GetMapping("{id}")
     public BookDTO get(@PathVariable Long id){
         return service.getById(id)
-                .map(book -> modelMapper.map(book,BookDTO.class))
+                .map(book -> modelMapper.map(book, BookDTO.class))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public BookDTO create(@RequestBody @Valid BookDTO dto){
-        Book book = modelMapper.map(dto, Book.class);
-        Book savedBook = service.save(book);
+        com.fratris.libraryapi.model.entity.Book book = modelMapper.map(dto, com.fratris.libraryapi.model.entity.Book.class);
+        com.fratris.libraryapi.model.entity.Book savedBook = service.save(book);
 
         return modelMapper.map( savedBook, BookDTO.class);
     }
@@ -46,7 +44,7 @@ public class BookController {
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id){
-        Book book = service.getById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        com.fratris.libraryapi.model.entity.Book book = service.getById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         service.delete(book);
 
     }

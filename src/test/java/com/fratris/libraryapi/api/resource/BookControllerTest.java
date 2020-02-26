@@ -1,9 +1,7 @@
 package com.fratris.libraryapi.api.resource;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fratris.libraryapi.api.dto.BookDTO;
-import com.fratris.libraryapi.model.entity.Book;
 import com.fratris.libraryapi.service.BookService;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
@@ -46,9 +44,9 @@ public class BookControllerTest {
     public void createBookTest() throws Exception {
 
         BookDTO dto = createNewDtoBook();
-        Book savedBook = createValidBook();
+        com.fratris.libraryapi.model.entity.Book savedBook = createValidBook();
 
-        BDDMockito.given(service.save(Mockito.any(Book.class))).willReturn(savedBook);
+        BDDMockito.given(service.save(Mockito.any(com.fratris.libraryapi.model.entity.Book.class))).willReturn(savedBook);
 
         String json = new ObjectMapper().writeValueAsString(dto);
 
@@ -69,7 +67,7 @@ public class BookControllerTest {
     @Test
     @DisplayName("Deve lançar erro de validação quando não houver dados suficientes para criação do livro")
     public void createInvalidBookTest() throws Exception {
-        String json = new ObjectMapper().writeValueAsString(new Book());
+        String json = new ObjectMapper().writeValueAsString(new com.fratris.libraryapi.model.entity.Book());
 
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
                 .post(BOOK_API)
@@ -87,7 +85,7 @@ public class BookControllerTest {
     @DisplayName("Deve retornar informações do livro com o id informado")
     public void getDetailsBookTest() throws Exception {
         Long id = 1L;
-        Book book = Book.builder().id(id).author("Eduardo").title("O Batman").isbn("123").build();
+        com.fratris.libraryapi.model.entity.Book book = com.fratris.libraryapi.model.entity.Book.builder().id(id).author("Eduardo").title("O Batman").isbn("123").build();
         BDDMockito.given(service.getById(id)).willReturn(Optional.of(book));
 
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
@@ -123,7 +121,7 @@ public class BookControllerTest {
     @DisplayName("Deve deletar o livro com o id informado")
     public void deleteExistentBookTest() throws Exception {
         Long id = 1l;
-        Book book = Book.builder().id(id).build();
+        com.fratris.libraryapi.model.entity.Book book = com.fratris.libraryapi.model.entity.Book.builder().id(id).build();
         BDDMockito.given(service.getById(Mockito.anyLong())).willReturn(Optional.of(book));
 
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
@@ -154,7 +152,7 @@ public class BookControllerTest {
         Long id = 101l;
         BookDTO dtoBook = BookDTO.builder().author("Fulano").title("Cruzadas").isbn("888").build();
         String json = new ObjectMapper().writeValueAsString(dtoBook);
-        Book updatedBook = Book.builder().id(id).author("Fulano").title("Cruzadas").isbn("888").build();
+        com.fratris.libraryapi.model.entity.Book updatedBook = com.fratris.libraryapi.model.entity.Book.builder().id(id).author("Fulano").title("Cruzadas").isbn("888").build();
 
         BDDMockito.given(service.getById(id)).willReturn(Optional.of(createValidBook()));
         BDDMockito.given(service.updateById(Mockito.any())).willReturn(updatedBook);
@@ -196,8 +194,8 @@ public class BookControllerTest {
 
     }
 
-    public Book createValidBook(){
-        return  Book.builder().id(101L).author("Eduardo").title("My Life").isbn("101").build();
+    public com.fratris.libraryapi.model.entity.Book createValidBook(){
+        return  com.fratris.libraryapi.model.entity.Book.builder().id(101L).author("Eduardo").title("My Life").isbn("101").build();
     }
 
     public BookDTO createNewDtoBook(){

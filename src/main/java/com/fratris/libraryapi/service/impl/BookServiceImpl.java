@@ -1,6 +1,5 @@
 package com.fratris.libraryapi.service.impl;
 
-import com.fratris.libraryapi.api.dto.BookDTO;
 import com.fratris.libraryapi.exception.BusinessException;
 import com.fratris.libraryapi.model.entity.Book;
 import com.fratris.libraryapi.repository.BookRepository;
@@ -30,15 +29,22 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Optional<Book> getById(Long id) {
-        return Optional.empty();
+        return repository.findById(id);
     }
 
     @Override
     public void delete(Book book) {
+        if(book == null || book.getId() == null){
+            throw  new IllegalArgumentException("Book id can´t be null");
+        }
+        repository.delete(book);
     }
 
     @Override
     public Book updateById(Book book) {
-     return  null;
+        if(book == null || book.getId() == null){
+            throw  new IllegalArgumentException("Book id can´t be null");
+        }
+     return  repository.save(book);
     }
 }
